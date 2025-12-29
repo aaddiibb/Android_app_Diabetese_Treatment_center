@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#1A1A1A">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Diabetes Risk Prediction"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#F0F0F0"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please fill in your medical information below. All fields are required."
+            android:textSize="12sp"
+            android:textColor="#E0E0E0"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- Form Fields Grid -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#252525"
+            android:padding="15dp">
+
+            <!-- Row 1: Name and Age -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name:"
+                        android:textColor="#E0E0E0"
+                        android:textSize="12sp"/>
+
+                    <EditText
+                        android:id="@+id/nameField"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:hint="Your name"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="10dp"
+                        android:textColor="#F0F0F0"
+                        android:textColorHint="#888888"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Age:"
+                        android:textColor="#E0E0E0"
+                        android:textSize="12sp"/>
+
+                    <EditText
+                        android:id="@+id/ageField"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:hint="1-120"
+                        android:inputType="number"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="10dp"
+                        android:textColor="#F0F0F0"
+                        android:textColorHint="#888888"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 2: Pregnancies and Glucose -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pregnancies:"
+                        android:textColor="#E0E0E0"
+                        android:textSize="12sp"/>
+
+                    <EditText
+                        android:id="@+id/pregnanciesField"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:hint="Number of pregnancies"
+                        android:inputType="number"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="10dp"
+                        android:textColor="#F0F0F0"
+                        android:textColorHint="#888888"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Glucose (mg/dL):"
+                        android:textColor="#E0E0E0"
+                        android:textSize="12sp"/>
+
+                    <EditText
+                        android:id="@+id/glucoseField"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:hint="Fasting glucose"
+                        android:inputType="numberDecimal"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="10dp"
+                        android:textColor="#F0F0F0"
+                        android:textColorHint="#888888"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 3: Blood Pressure and Skin Thickness -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Blood Pressure (mmHg):"
+                        android:textColor="#E0E0E0"
+                        android:textSize="12sp"/>
+
+                    <EditText
+                        android:id="@+id/bloodPressureField"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:hint="Systolic"
+                        android:inputType="numberDecimal"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="10dp"
+                        android:textColor="#F0F0F0"
+                        android:textColorHint="#888888"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Skin Thickness (mm):"
+                        android:textColor="#E0E0E0"
+                        android:textSize="12sp"/>
+
+                    <EditText
+                        android:id="@+id/skinThicknessField"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:hint="Triceps fold"
+                        android:inputType="numberDecimal"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="10dp"
+                        android:textColor="#F0F0F0"
+                        android:textColorHint="#888888"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 4: Insulin and BMI -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Insulin (μU/ml):"
+                        android:textColor="#E0E0E0"
+                        android:textSize="12sp"/>
+
+                    <EditText
+                        android:id="@+id/insulinField"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:hint="2-hour insulin"
+                        android:inputType="numberDecimal"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="10dp"
+                        android:textColor="#F0F0F0"
+                        android:textColorHint="#888888"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BMI (kg/m²):"
+                        android:textColor="#E0E0E0"
+                        android:textSize="12sp"/>
+
+                    <EditText
+                        android:id="@+id/bmiField"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:hint="Body Mass Index"
+                        android:inputType="numberDecimal"
+                        android:background="@drawable/edit_text_bg"
+                        android:padding="10dp"
+                        android:textColor="#F0F0F0"
+                        android:textColorHint="#888888"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 5: Diabetes Pedigree Function -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Diabetes Pedigree Function:"
+                    android:textColor="#E0E0E0"
+                    android:textSize="12sp"/>
+
+                <EditText
+                    android:id="@+id/dpfField"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:hint="Family history factor"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/edit_text_bg"
+                    android:padding="10dp"
+                    android:textColor="#F0F0F0"
+                    android:textColorHint="#888888"
+                    android:textSize="13sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp">
+
+            <Button
+                android:id="@+id/predictBtn"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Predict"
+                android:textColor="#F0F0F0"
+                android:backgroundTint="#0D7377"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/clearBtn"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Clear"
+                android:textColor="#F0F0F0"
+                android:backgroundTint="#5A5A5A"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"/>
+
+            <Button
+                android:id="@+id/backBtn"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Back"
+                android:textColor="#F0F0F0"
+                android:backgroundTint="#666666"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <!-- Loading Indicator -->
+        <TextView
+            android:id="@+id/loadingLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⏳ Processing prediction... Please wait."
+            android:textColor="#64B5F6"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Result Container -->
+        <LinearLayout
+            android:id="@+id/resultContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#252525"
+            android:padding="15dp"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+</ScrollView>
+

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "161642107912",
+    "project_id": "diabetes-treatment-center",
+    "storage_bucket": "diabetes-treatment-center.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:161642107912:android:87d52d8cf43a994b14edbd",
+        "android_client_info": {
+          "package_name": "com.example.diabetestreatmentcenter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_Er6YQAjsaYjzA53SwDWtnB0MF1JQkBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
