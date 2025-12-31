@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="#2C2C2C"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/doctorNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dr. Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/specialtyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Specialty"
+            android:textSize="14sp"
+            android:textColor="#B0B0B0"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/clinicText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clinic Address"
+            android:textSize="14sp"
+            android:textColor="#B0B0B0"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/availableDaysText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Available Days"
+            android:textSize="14sp"
+            android:textColor="#B0B0B0"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/bookButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Book Appointment"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#4CAF50"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+
