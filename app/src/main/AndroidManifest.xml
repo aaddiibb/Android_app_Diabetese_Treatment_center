@@ -34,6 +34,7 @@
         <activity android:name=".PatientDashboardActivity" android:exported="false" />
         <activity android:name=".PredictionActivity" android:exported="false" />
         <activity android:name=".DoctorsListActivity" android:exported="false" />
+        <activity android:name=".BookAppointmentActivity" android:exported="false" />
         <activity android:name=".PatientAppointmentsActivity" android:exported="false" />
         <activity android:name=".HealthHistoryActivity" android:exported="false" />
 

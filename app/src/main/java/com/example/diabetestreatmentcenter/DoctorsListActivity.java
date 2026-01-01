@@ -1,5 +1,6 @@
 package com.example.diabetestreatmentcenter;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,11 +56,12 @@ public class DoctorsListActivity extends AppCompatActivity {
 
         // Initialize adapter with click listener
         doctorAdapter = new DoctorAdapter(doctor -> {
-            // Handle book appointment click
-            Toast.makeText(DoctorsListActivity.this,
-                    "Booking appointment with Dr. " + doctor.getName(),
-                    Toast.LENGTH_SHORT).show();
-            // TODO: Create BookAppointmentActivity
+            // Handle book appointment click - open BookAppointmentActivity
+            Intent intent = new Intent(DoctorsListActivity.this, BookAppointmentActivity.class);
+            intent.putExtra("doctorId", doctor.getUserId());
+            intent.putExtra("doctorName", doctor.getName());
+            intent.putExtra("doctorSpecialty", doctor.getSpecialty());
+            startActivity(intent);
         });
 
         doctorsRecyclerView.setAdapter(doctorAdapter);
