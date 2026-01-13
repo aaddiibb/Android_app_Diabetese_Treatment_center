@@ -50,7 +50,17 @@
             android:text="Note: Follow-up appointment"
             android:textSize="13sp"
             android:textColor="#AAAAAA"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel Appointment"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#F44336"
+            android:layout_marginTop="8dp"/>
 
     </LinearLayout>
 

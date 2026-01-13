@@ -19,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class BookAppointmentActivity extends AppCompatActivity {
 
@@ -89,7 +90,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
                     selectedDateTime.set(Calendar.MONTH, month);
                     selectedDateTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                    String dateText = String.format("Date: %02d/%02d/%d",
+                    String dateText = String.format(Locale.getDefault(), "Date: %02d/%02d/%d",
                             dayOfMonth, month + 1, year);
                     selectDateButton.setText(dateText);
                 },
@@ -112,7 +113,7 @@ public class BookAppointmentActivity extends AppCompatActivity {
                     selectedDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     selectedDateTime.set(Calendar.MINUTE, minute);
 
-                    String timeText = String.format("Time: %02d:%02d", hourOfDay, minute);
+                    String timeText = String.format(Locale.getDefault(), "Time: %02d:%02d", hourOfDay, minute);
                     selectTimeButton.setText(timeText);
                 },
                 calendar.get(Calendar.HOUR_OF_DAY),
@@ -136,15 +137,19 @@ public class BookAppointmentActivity extends AppCompatActivity {
         }
 
         // Get patient info
-        String patientUserId = SessionManager.getInstance().getCurrentUserId();
-        if (patientUserId == null) {
-            patientUserId = FirebaseAuth.getInstance().getUid();
+        String tempUserId = SessionManager.getInstance().getCurrentUserId();
+        if (tempUserId == null) {
+            tempUserId = FirebaseAuth.getInstance().getUid();
         }
 
-        if (patientUserId == null) {
+        if (tempUserId == null) {
             Toast.makeText(this, "Error: Not logged in", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Patient user ID is null!");
             return;
         }
+
+        // Make final for lambda
+        final String patientUserId = tempUserId;
 
         String patientName = SessionManager.getInstance().getCurrentUser() != null ?
                 SessionManager.getInstance().getCurrentUser().getName() : "Patient";
@@ -162,12 +167,15 @@ public class BookAppointmentActivity extends AppCompatActivity {
         appointment.setPatientNote(patientNote.isEmpty() ? null : patientNote);
         appointment.setDoctorNote(null);
 
+        Log.d(TAG, "Booking appointment - Patient: " + patientName + " (ID: " + patientUserId + "), Doctor: " + doctorName + " (ID: " + doctorId + ")");
+
         // Save to Firestore
         bookButton.setEnabled(false);
         db.collection("appointments")
                 .add(appointment)
                 .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "Appointment booked with ID: " + documentReference.getId());
+                    Log.d(TAG, "Appointment booked successfully with ID: " + documentReference.getId());
+                    Log.d(TAG, "Appointment details - PatientUserId: " + patientUserId + ", DoctorUserId: " + doctorId);
                     Toast.makeText(BookAppointmentActivity.this,
                             "Appointment requested successfully!",
                             Toast.LENGTH_LONG).show();

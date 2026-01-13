@@ -223,14 +223,19 @@ public class RegisterActivity extends AppCompatActivity {
         
         Doctor doctor = new Doctor(null, userId, name, email, specialty, clinic, availableDays);
         
+        android.util.Log.d("RegisterActivity", "Saving doctor profile - UserId: " + userId + ", Name: " + name + ", Specialty: " + specialty);
+
         db.collection("doctors").document(userId)
                 .set(doctor)
                 .addOnSuccessListener(aVoid -> {
+                    android.util.Log.d("RegisterActivity", "Doctor profile saved successfully!");
+                    Toast.makeText(RegisterActivity.this, "Doctor profile created successfully!", Toast.LENGTH_SHORT).show();
                     User user = new User(userId, role, name, email, phoneField.getText().toString().trim());
                     completeRegistration(user, userId);
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(RegisterActivity.this, "Error saving doctor profile: " + e.getMessage(), 
+                    android.util.Log.e("RegisterActivity", "Error saving doctor profile", e);
+                    Toast.makeText(RegisterActivity.this, "Error saving doctor profile: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                     registerButton.setEnabled(true);
                     registerButton.setText("Create Account");

@@ -21,6 +21,15 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
     private List<Appointment> appointmentList = new ArrayList<>();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault());
+    private OnAppointmentCancelListener cancelListener;
+
+    public interface OnAppointmentCancelListener {
+        void onCancel(Appointment appointment);
+    }
+
+    public void setCancelListener(OnAppointmentCancelListener listener) {
+        this.cancelListener = listener;
+    }
 
     public void setAppointments(List<Appointment> appointments) {
         this.appointmentList = appointments;
@@ -48,6 +57,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
     class AppointmentViewHolder extends RecyclerView.ViewHolder {
         private TextView doctorNameText, dateTimeText, statusText, noteText;
+        private android.widget.Button cancelButton;
 
         public AppointmentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -55,6 +65,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             dateTimeText = itemView.findViewById(R.id.dateTimeText);
             statusText = itemView.findViewById(R.id.statusText);
             noteText = itemView.findViewById(R.id.noteText);
+            cancelButton = itemView.findViewById(R.id.cancelButton);
         }
 
         public void bind(Appointment appointment) {
@@ -102,6 +113,19 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
                 noteText.setVisibility(View.VISIBLE);
             } else {
                 noteText.setVisibility(View.GONE);
+            }
+
+            // Show cancel button only for REQUESTED or SCHEDULED appointments
+            String currentStatus = appointment.getStatus() != null ? appointment.getStatus().toUpperCase() : "PENDING";
+            if (currentStatus.equals("CANCELLED") || currentStatus.equals("COMPLETED")) {
+                cancelButton.setVisibility(View.GONE);
+            } else {
+                cancelButton.setVisibility(View.VISIBLE);
+                cancelButton.setOnClickListener(v -> {
+                    if (cancelListener != null) {
+                        cancelListener.onCancel(appointment);
+                    }
+                });
             }
         }
     }

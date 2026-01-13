@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +41,7 @@ public class PatientAppointmentsActivity extends AppCompatActivity {
 
         // Initialize adapter
         appointmentAdapter = new AppointmentAdapter();
+        appointmentAdapter.setCancelListener(appointment -> showCancelDialog(appointment));
         appointmentsRecyclerView.setAdapter(appointmentAdapter);
 
         loadAppointments();
@@ -61,16 +63,32 @@ public class PatientAppointmentsActivity extends AppCompatActivity {
         Log.d(TAG, "Loading appointments for user: " + currentUserId);
 
         // Query appointments where patientUserId matches current user
+        // Removed orderBy to avoid Firestore index requirement - will sort in memory
         final String userId = currentUserId;
         appointmentsListener = db.collection("appointments")
                 .whereEqualTo("patientUserId", userId)
-                .orderBy("scheduledAt", Query.Direction.DESCENDING)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.e(TAG, "Error loading appointments", error);
-                        Toast.makeText(PatientAppointmentsActivity.this,
-                                "Error loading appointments: " + error.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+
+                        String errorMsg = error.getMessage();
+
+                        // Check for specific error types
+                        if (errorMsg != null && errorMsg.toLowerCase().contains("permission")) {
+                            Toast.makeText(PatientAppointmentsActivity.this,
+                                    "Permission Denied: Please update Firestore security rules.\nSee FIRESTORE_PERMISSION_FIX.md",
+                                    Toast.LENGTH_LONG).show();
+                            Log.e(TAG, "PERMISSION DENIED! Update Firestore security rules to allow read access to appointments collection.");
+                        } else if (errorMsg != null && errorMsg.contains("index")) {
+                            Toast.makeText(PatientAppointmentsActivity.this,
+                                    "Note: Appointments shown in upload order",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "Firestore index not created. Showing appointments without ordering.");
+                        } else {
+                            Toast.makeText(PatientAppointmentsActivity.this,
+                                    "Error loading appointments: " + errorMsg,
+                                    Toast.LENGTH_SHORT).show();
+                        }
                         return;
                     }
 
@@ -81,8 +99,17 @@ public class PatientAppointmentsActivity extends AppCompatActivity {
                             appointment.setId(doc.getId());
                             appointments.add(appointment);
                             Log.d(TAG, "Loaded appointment with Dr. " + appointment.getDoctorName() +
-                                    " - Status: " + appointment.getStatus());
+                                    " - Status: " + appointment.getStatus() +
+                                    " - PatientUserId: " + appointment.getPatientUserId());
                         }
+
+                        // Sort in memory by scheduled date (newest first)
+                        appointments.sort((a1, a2) -> {
+                            if (a1.getScheduledAt() != null && a2.getScheduledAt() != null) {
+                                return a2.getScheduledAt().compareTo(a1.getScheduledAt());
+                            }
+                            return 0;
+                        });
 
                         Log.d(TAG, "Total appointments loaded: " + appointments.size());
                         appointmentAdapter.setAppointments(appointments);
@@ -92,7 +119,42 @@ public class PatientAppointmentsActivity extends AppCompatActivity {
                                     "No appointments yet. Book one from the dashboard!",
                                     Toast.LENGTH_LONG).show();
                         }
+                    } else {
+                        Log.w(TAG, "Appointments query returned null");
                     }
+                });
+    }
+
+    private void showCancelDialog(Appointment appointment) {
+        new AlertDialog.Builder(this)
+                .setTitle("Cancel Appointment")
+                .setMessage("Are you sure you want to cancel your appointment with Dr. " + appointment.getDoctorName() + "?")
+                .setPositiveButton("Yes, Cancel", (dialog, which) -> cancelAppointment(appointment))
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void cancelAppointment(Appointment appointment) {
+        if (appointment.getId() == null) {
+            Toast.makeText(this, "Error: Invalid appointment", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Delete the appointment from Firestore
+        db.collection("appointments")
+                .document(appointment.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Appointment cancelled and deleted: " + appointment.getId());
+                    Toast.makeText(PatientAppointmentsActivity.this,
+                            "Appointment cancelled successfully",
+                            Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error cancelling appointment", e);
+                    Toast.makeText(PatientAppointmentsActivity.this,
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
                 });
     }
 
