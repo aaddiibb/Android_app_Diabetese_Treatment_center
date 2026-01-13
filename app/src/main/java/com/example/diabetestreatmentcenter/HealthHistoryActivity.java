@@ -1,6 +1,10 @@
 package com.example.diabetestreatmentcenter;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,12 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.diabetestreatmentcenter.adapters.HealthHistoryAdapter;
 import com.example.diabetestreatmentcenter.models.PredictionHistory;
+import com.example.diabetestreatmentcenter.models.User;
 import com.example.diabetestreatmentcenter.utils.ChartGenerator;
+import com.example.diabetestreatmentcenter.utils.PDFReportGenerator;
 import com.example.diabetestreatmentcenter.utils.SessionManager;
 import com.github.mikephil.charting.charts.LineChart;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,12 +35,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HealthHistoryActivity extends AppCompatActivity {
 
     private static final String TAG = "HealthHistory";
+    private static final int PERMISSION_REQUEST_CODE = 100;
     private HealthHistoryAdapter historyAdapter;
     private FirebaseFirestore db;
     private ListenerRegistration historyListener;
@@ -39,12 +50,14 @@ public class HealthHistoryActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private Button toggleViewButton;
     private Button predictionHistoryButton;
+    private Button downloadPdfButton;
     private LinearLayout chartContainer;
     private LinearLayout listContainer;
     private Spinner chartTypeSpinner;
     private LineChart lineChart;
     private boolean isChartView = false;
     private List<PredictionHistory> currentHistory = new ArrayList<>();
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +75,9 @@ public class HealthHistoryActivity extends AppCompatActivity {
 
         toggleViewButton.setOnClickListener(v -> toggleView());
         predictionHistoryButton.setOnClickListener(v -> openPredictionHistory());
+        downloadPdfButton.setOnClickListener(v -> downloadPdfReport());
 
+        loadCurrentUser();
         loadHealthHistory();
     }
 
@@ -71,6 +86,7 @@ public class HealthHistoryActivity extends AppCompatActivity {
         emptyStateText = findViewById(R.id.emptyStateText);
         toggleViewButton = findViewById(R.id.toggleViewButton);
         predictionHistoryButton = findViewById(R.id.predictionHistoryButton);
+        downloadPdfButton = findViewById(R.id.downloadPdfButton);
         chartContainer = findViewById(R.id.chartContainer);
         listContainer = findViewById(R.id.listContainer);
         chartTypeSpinner = findViewById(R.id.chartTypeSpinner);
@@ -247,12 +263,125 @@ public class HealthHistoryActivity extends AppCompatActivity {
             listContainer.setVisibility(View.GONE);
             emptyStateText.setVisibility(View.VISIBLE);
             toggleViewButton.setEnabled(false);
+            downloadPdfButton.setEnabled(false);
         } else {
             if (!isChartView) {
                 listContainer.setVisibility(View.VISIBLE);
             }
             emptyStateText.setVisibility(View.GONE);
             toggleViewButton.setEnabled(true);
+            downloadPdfButton.setEnabled(true);
+        }
+    }
+
+    private void loadCurrentUser() {
+        String currentUserId = SessionManager.getInstance().getCurrentUserId();
+        if (currentUserId == null) {
+            currentUserId = FirebaseAuth.getInstance().getUid();
+        }
+
+        if (currentUserId == null) {
+            Log.e(TAG, "Cannot load user - user ID is null");
+            return;
+        }
+
+        db.collection("users")
+                .document(currentUserId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        currentUser = documentSnapshot.toObject(User.class);
+                        if (currentUser != null) {
+                            currentUser.setId(documentSnapshot.getId());
+                            Log.d(TAG, "User loaded: " + currentUser.getName());
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error loading user", e);
+                });
+    }
+
+    private void downloadPdfReport() {
+        if (currentHistory == null || currentHistory.isEmpty()) {
+            Toast.makeText(this, "No health data available to generate report", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check for storage permission on Android 6.0+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_CODE);
+                return;
+            }
+        }
+
+        generateAndSharePdf();
+    }
+
+    private void generateAndSharePdf() {
+        Toast.makeText(this, "Generating PDF report...", Toast.LENGTH_SHORT).show();
+
+        // Generate PDF in background
+        new Thread(() -> {
+            try {
+                File pdfFile = PDFReportGenerator.generateHealthReport(
+                        HealthHistoryActivity.this,
+                        currentUser,
+                        currentHistory
+                );
+
+                runOnUiThread(() -> {
+                    if (pdfFile != null && pdfFile.exists()) {
+                        Toast.makeText(HealthHistoryActivity.this,
+                                "Report generated successfully!", Toast.LENGTH_SHORT).show();
+                        openPdfFile(pdfFile);
+                    } else {
+                        Toast.makeText(HealthHistoryActivity.this,
+                                "Failed to generate PDF report", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error generating PDF", e);
+                runOnUiThread(() -> Toast.makeText(HealthHistoryActivity.this,
+                        "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+        }).start();
+    }
+
+    private void openPdfFile(File pdfFile) {
+        try {
+            Uri pdfUri = FileProvider.getUriForFile(
+                    this,
+                    getApplicationContext().getPackageName() + ".fileprovider",
+                    pdfFile
+            );
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(pdfUri, "application/pdf");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+            Intent chooser = Intent.createChooser(intent, "Open PDF with");
+            startActivity(chooser);
+        } catch (Exception e) {
+            Log.e(TAG, "Error opening PDF", e);
+            Toast.makeText(this, "PDF saved to: " + pdfFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                generateAndSharePdf();
+            } else {
+                Toast.makeText(this, "Storage permission is required to save PDF", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

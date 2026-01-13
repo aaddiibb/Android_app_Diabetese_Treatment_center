@@ -38,14 +38,34 @@
                 android:padding="10dp"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/predictionHistoryButton"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📋 View Detailed Prediction History"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#2196F3"
-            android:padding="12dp"/>
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/predictionHistoryButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="📋 Prediction History"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#2196F3"
+                android:padding="12dp"/>
+
+            <Button
+                android:id="@+id/downloadPdfButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="📄 Download PDF"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#FF5722"
+                android:padding="12dp"/>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Chart Container -->
